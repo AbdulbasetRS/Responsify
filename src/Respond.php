@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\App;
 
 /**
  * Responsify - A Laravel package for standardized API responses
@@ -274,7 +273,7 @@ class Respond implements ResponseBuilderInterface, ResponseFormatterInterface
      */
     public function toJson(int $options = 0): JsonResponse
     {
-        return response()->json($this->buildResponse(), $this->status, [], $options);
+        return new JsonResponse($this->buildResponse(), $this->status, [], $options);
     }
 
     /**
@@ -284,9 +283,11 @@ class Respond implements ResponseBuilderInterface, ResponseFormatterInterface
      */
     public function toResponse(): Response
     {
-        return response($this->toJsonString(), $this->status, [
-            'Content-Type' => 'application/json'
-        ]);
+        return new Response(
+            $this->toJsonString(),               // content as JSON string
+            $this->status,                       // HTTP status code
+            ['Content-Type' => 'application/json'] // headers
+        );
     }
 
     /**

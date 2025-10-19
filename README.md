@@ -26,6 +26,34 @@ This will publish:
 - `config/responsify.php` - Configuration file for default language settings
 - `lang/vendor/responsify/` - Translation files for multiple languages
 
+### 🧪 Testing Setup
+
+For development and testing, install PHPUnit and run the comprehensive test suite:
+
+```bash
+# Install PHPUnit for testing
+composer install
+
+# Run all tests
+composer test
+
+# Or run PHPUnit directly
+vendor/bin/phpunit
+
+# Run with detailed output
+vendor/bin/phpunit --testdox
+
+# Generate HTML coverage report
+vendor/bin/phpunit --coverage-html coverage
+```
+
+The package includes **60+ test cases** covering:
+- ✅ Core functionality and method chaining
+- ✅ Language enum integration and validation
+- ✅ Error handling and edge cases
+- ✅ Integration between all components
+- ✅ Unicode and special character support
+
 ## 🚀 Usage
 
 ### Basic Usage
@@ -255,17 +283,225 @@ return Respond::status(200)
 
 ## 🧪 Testing
 
-Run the tests with:
+The package includes comprehensive test suites that ensure reliability and catch regressions early. The tests cover all public methods, edge cases, error handling, and integration scenarios.
+
+### 📊 Test Coverage
+
+The test suite includes **60+ test cases** across 4 test files:
+
+| Test File | Purpose | Test Count |
+|-----------|---------|------------|
+| **`RespondTest.php`** | Core Respond class functionality | 25+ tests |
+| **`LanguageEnumTest.php`** | Language enum functionality | 15+ tests |
+| **`RespondIntegrationTest.php`** | Integration between components | 12+ tests |
+| **`RespondErrorHandlingTest.php`** | Error handling and edge cases | 10+ tests |
+
+### 🚀 Running Tests
+
+#### Basic Test Execution
 
 ```bash
+# Run all tests
 composer test
+
+# Or run PHPUnit directly
+vendor/bin/phpunit
+
+# Run with detailed output
+vendor/bin/phpunit --testdox
+
+# Generate HTML coverage report
+vendor/bin/phpunit --coverage-html coverage
 ```
 
-Or run PHPUnit directly:
+#### Running Specific Test Suites
 
 ```bash
-vendor/bin/phpunit
+# Run only Respond class tests
+vendor/bin/phpunit --filter=RespondTest
+
+# Run only Language enum tests
+vendor/bin/phpunit --filter=LanguageEnumTest
+
+# Run only integration tests
+vendor/bin/phpunit --filter=RespondIntegrationTest
+
+# Run only error handling tests
+vendor/bin/phpunit --filter=RespondErrorHandlingTest
 ```
+
+#### Running Individual Tests
+
+```bash
+# Run specific test method
+vendor/bin/phpunit --filter=test_can_create_response_with_status_only
+
+# Run tests matching pattern
+vendor/bin/phpunit --filter=test_can_chain
+
+# Run tests for specific functionality
+vendor/bin/phpunit --filter=test_language_enum
+```
+
+### 🔍 Test Categories
+
+#### **Core Functionality Tests**
+- ✅ Basic response creation with status codes
+- ✅ Method chaining (message, details, data, language)
+- ✅ All output formats (toJson, toArray, toJsonString, toCollection, toResponse)
+- ✅ Language enum integration
+- ✅ Helper function usage
+
+#### **Language & Internationalization Tests**
+- ✅ All supported languages (en, ar, de, fr, es, it)
+- ✅ Language enum functionality and validation
+- ✅ Fallback mechanisms for missing translations
+- ✅ Unicode and special character handling
+
+#### **Integration Tests**
+- ✅ Complex data structures and large datasets
+- ✅ Mixed data types (strings, numbers, objects, arrays)
+- ✅ Concurrent usage and state isolation
+- ✅ Helper function integration
+
+#### **Error Handling & Edge Cases**
+- ✅ Graceful handling of file system errors
+- ✅ Memory limit and encoding issue handling
+- ✅ Invalid input validation and recovery
+- ✅ Configuration and environment error handling
+
+### 📋 Test Examples
+
+#### Testing Basic Usage
+```bash
+# Test basic response creation
+vendor/bin/phpunit --filter=test_can_create_response_with_status_only
+
+# Test method chaining
+vendor/bin/phpunit --filter=test_can_chain_all_methods
+
+# Test language switching
+vendor/bin/phpunit --filter=test_can_use_enum_for_language_setting
+```
+
+#### Testing Language Features
+```bash
+# Test all language enum functionality
+vendor/bin/phpunit --filter=LanguageEnumTest
+
+# Test language validation
+vendor/bin/phpunit --filter=test_can_check_if_language_is_supported
+
+# Test language display names
+vendor/bin/phpunit --filter=test_has_display_names
+```
+
+#### Testing Error Scenarios
+```bash
+# Test error handling
+vendor/bin/phpunit --filter=RespondErrorHandlingTest
+
+# Test graceful degradation
+vendor/bin/phpunit --filter=test_handles_exceptions_gracefully
+
+# Test Unicode handling
+vendor/bin/phpunit --filter=test_can_handle_unicode_and_encoding_issues
+```
+
+### 🛠️ Development Workflow
+
+#### Before Committing Code
+```bash
+# Run full test suite
+composer test
+
+# Run with coverage to ensure good test coverage
+vendor/bin/phpunit --coverage-html coverage
+```
+
+#### Testing Specific Changes
+```bash
+# Test only the functionality you modified
+vendor/bin/phpunit --filter=test_can_chain_message_method
+
+# Run integration tests after API changes
+vendor/bin/phpunit --filter=RespondIntegrationTest
+```
+
+#### Continuous Integration
+```bash
+# In your CI pipeline
+composer install --no-dev
+composer test --coverage-clover=coverage.xml
+```
+
+### 📈 Coverage Goals
+
+The test suite aims for:
+- **Function Coverage**: 100% of public methods
+- **Line Coverage**: 90%+ of executable lines
+- **Branch Coverage**: 85%+ of conditional branches
+- **Error Path Coverage**: All major error scenarios
+
+### 🐛 Debugging Failed Tests
+
+If tests fail, you can:
+
+```bash
+# Run with verbose output to see details
+vendor/bin/phpunit --verbose
+
+# Run with debug information
+vendor/bin/phpunit --debug
+
+# Stop on first failure for quick debugging
+vendor/bin/phpunit --stop-on-failure
+
+# Generate coverage report to identify untested code
+vendor/bin/phpunit --coverage-html coverage
+```
+
+### 🔧 Test Configuration
+
+The PHPUnit configuration is in `phpunit.xml` and includes:
+- Test suite discovery
+- Code coverage filtering
+- Environment setup for testing
+- Bootstrap file configuration
+
+### 📝 Adding New Tests
+
+When adding new functionality:
+
+1. **Add tests in the appropriate test file**
+2. **Follow the existing naming convention**: `test_can_*` or `test_*`
+3. **Test both success and failure scenarios**
+4. **Include edge cases and boundary conditions**
+5. **Run tests to ensure they pass**
+
+```php
+/** @test */
+public function test_new_functionality()
+{
+    // Arrange
+    $response = Respond::status(200);
+
+    // Act
+    $result = $response->newMethod();
+
+    // Assert
+    $this->assertEquals('expected_result', $result);
+}
+```
+
+### 🎯 Best Practices
+
+- **Write tests first** (TDD approach)
+- **Keep tests focused** and isolated
+- **Use descriptive test names** that explain what they test
+- **Test behavior, not implementation**
+- **Run tests frequently** during development
+- **Maintain high test coverage** for reliability
 
 ## 📝 License
 
