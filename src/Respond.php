@@ -4,6 +4,7 @@ namespace Abdulbaset\Responsify;
 
 use Abdulbaset\Responsify\Contracts\ResponseBuilderInterface;
 use Abdulbaset\Responsify\Contracts\ResponseFormatterInterface;
+use Abdulbaset\Responsify\Enums\Language;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -39,14 +40,9 @@ class Respond implements ResponseBuilderInterface, ResponseFormatterInterface
     protected mixed $data = [];
 
     /**
-     * Language code
+     * Language enum instance
      */
-    protected ?string $language = null;
-
-    /**
-     * Supported languages
-     */
-    protected array $supportedLanguages = ['en', 'ar', 'de', 'fr', 'es', 'it'];
+    protected ?Language $languageEnum = null;
 
     /**
      * Create a new Respond instance with status code
@@ -105,8 +101,8 @@ class Respond implements ResponseBuilderInterface, ResponseFormatterInterface
      */
     public function language(string $language): self
     {
-        if (in_array($language, $this->supportedLanguages)) {
-            $this->language = $language;
+        if (Language::isSupported($language)) {
+            $this->languageEnum = Language::fromCode($language);
         }
         return $this;
     }
@@ -119,24 +115,24 @@ class Respond implements ResponseBuilderInterface, ResponseFormatterInterface
     protected function getLanguage(): string
     {
         // First priority: manually set language
-        if ($this->language) {
-            return $this->language;
+        if ($this->languageEnum) {
+            return $this->languageEnum->value;
         }
 
         // Second priority: config default language
         $configLanguage = Config::get('responsify.language');
-        if ($configLanguage && in_array($configLanguage, $this->supportedLanguages)) {
+        if ($configLanguage && Language::isSupported($configLanguage)) {
             return $configLanguage;
         }
 
         // Third priority: app locale
         $appLocale = Config::get('app.locale');
-        if ($appLocale && in_array($appLocale, $this->supportedLanguages)) {
+        if ($appLocale && Language::isSupported($appLocale)) {
             return $appLocale;
         }
 
         // Fallback to English
-        return 'en';
+        return Language::ENGLISH->value;
     }
 
     /**

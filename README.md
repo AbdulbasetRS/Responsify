@@ -69,13 +69,20 @@ return respond(404)
 The package supports multiple languages out of the box:
 
 ```php
-// Set specific language
+// Set specific language using string
 return Respond::status(200)
     ->language('ar') // Arabic
     ->toJson();
 
 return Respond::status(404)
     ->language('fr') // French
+    ->toJson();
+
+// Or use the Language enum for better type safety
+use Abdulbaset\Responsify\Enums\Language;
+
+return Respond::status(200)
+    ->language(Language::ARABIC->value) // Arabic
     ->toJson();
 
 // Supported languages: en, ar, de, fr, es, it
@@ -178,6 +185,33 @@ return [
 
 ## 🌍 Supported Languages
 
+The package supports the following languages with full enum support:
+
+```php
+use Abdulbaset\Responsify\Enums\Language;
+
+// Using enum constants
+Language::ENGLISH    // 'en' - English
+Language::ARABIC     // 'ar' - العربية (Arabic)
+Language::GERMAN     // 'de' - Deutsch (German)
+Language::FRENCH     // 'fr' - Français (French)
+Language::SPANISH    // 'es' - Español (Spanish)
+Language::ITALIAN    // 'it' - Italiano (Italian)
+
+// Get all supported language codes
+$codes = Language::getAllCodes(); // ['en', 'ar', 'de', 'fr', 'es', 'it']
+
+// Check if language is supported
+$isSupported = Language::isSupported('ar'); // true
+
+// Get language from code
+$language = Language::fromCode('ar'); // Language::ARABIC
+
+// Get display name
+$name = Language::ARABIC->getDisplayName(); // 'العربية'
+```
+
+### Language Codes:
 - **English** (`en`) - Default
 - **Arabic** (`ar`) - العربية
 - **German** (`de`) - Deutsch

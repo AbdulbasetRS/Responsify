@@ -3,6 +3,7 @@
 namespace Abdulbaset\Responsify\Tests;
 
 use Abdulbaset\Responsify\Respond;
+use Abdulbaset\Responsify\Enums\Language;
 use PHPUnit\Framework\TestCase;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -159,17 +160,29 @@ class RespondTest extends TestCase
     }
 
     /** @test */
-    public function it_supports_different_languages()
+    public function it_can_use_enum_for_language_setting()
     {
-        $supportedLanguages = ['en', 'ar', 'de', 'fr', 'es', 'it'];
+        $response = Respond::status(200)
+            ->language(Language::ARABIC->value);
 
-        foreach ($supportedLanguages as $lang) {
-            $response = Respond::status(200)->language($lang);
+        $result = $response->toArray();
 
-            // Should not throw an exception and should return valid response
-            $this->assertIsArray($response->toArray());
-            $this->assertEquals(200, $response->toArray()['status']);
-        }
+        $this->assertEquals(200, $result['status']);
+        // Should use Arabic translations
+        $this->assertNotEquals('OK', $result['message']);
+    }
+
+    /** @test */
+    public function it_ignores_invalid_language_codes()
+    {
+        $response = Respond::status(200)
+            ->language('invalid_language_code');
+
+        $result = $response->toArray();
+
+        // Should still work but fall back to default language (English)
+        $this->assertEquals(200, $result['status']);
+        $this->assertEquals('OK', $result['message']);
     }
 
     /** @test */
