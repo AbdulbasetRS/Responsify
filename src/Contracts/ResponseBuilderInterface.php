@@ -8,14 +8,6 @@ namespace Abdulbaset\Responsify\Contracts;
 interface ResponseBuilderInterface
 {
     /**
-     * Set the HTTP status code
-     *
-     * @param int $status
-     * @return self
-     */
-    public function status(int $status);
-
-    /**
      * Set custom message
      *
      * @param string $message

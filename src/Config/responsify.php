@@ -3,7 +3,6 @@
 // Config/responsify.php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Default Language
@@ -27,6 +26,5 @@ return [
     | Otherwise, it will be the application's default locale.
     |
     */
-    'language' => 'ar',
-
+    'language' => 'en',
 ];
