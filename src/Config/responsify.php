@@ -8,9 +8,8 @@ return [
     | Default Language
     |--------------------------------------------------------------------------
     |
-    | This value determines the default language for response messages.
-    | You can set it to one of the supported language codes:
-    |
+    | This option defines the default language used for response messages.
+    | 
     | Supported languages:
     |   - 'ar': Arabic
     |   - 'en': English
@@ -19,11 +18,24 @@ return [
     |   - 'es': Spanish
     |   - 'it': Italian
     |
-    | If set to null, the language will be determined dynamically using the
-    | application's default locale: <?php echo config('app.locale'); ?>
+    | -------------------------------------------------------------------------
+    | 🔹 Language Priority (from highest to lowest)
+    | -------------------------------------------------------------------------
     |
-    | If set to null or not defined, the default language will be 'en' (English).
-    | Otherwise, it will be the application's default locale.
+    | 1. Manually set language via ->language() method.
+    | 2. Application locale from config('app.locale'), 
+    |    but only if it’s supported by the package.
+    | 3. This config value: config('responsify.language'), 
+    |    if defined and supported.
+    | 4. Fallback to English ('en') if none of the above are valid.
+    |
+    | -------------------------------------------------------------------------
+    | 🔸 Notes
+    | -------------------------------------------------------------------------
+    | - If this value is set to null, the package will try to use the
+    |   application's default locale (config('app.locale')).
+    | - If the app locale is not supported by the package, it will use
+    |   the fallback language ('en').
     |
     */
     'language' => 'en',

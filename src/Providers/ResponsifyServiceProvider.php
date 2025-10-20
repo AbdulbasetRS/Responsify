@@ -32,6 +32,8 @@ class ResponsifyServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->loadTranslationsFrom(__DIR__ . '/../lang', 'responsify');
+
         // Publish configuration file
         if ($this->app->runningInConsole()) {
             $this->publishes([

@@ -5,10 +5,10 @@ namespace Abdulbaset\Responsify;
 use Abdulbaset\Responsify\Contracts\ResponseBuilderInterface;
 use Abdulbaset\Responsify\Contracts\ResponseFormatterInterface;
 use Abdulbaset\Responsify\Enums\Language;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 
 /**
  * Responsify - A Laravel package for standardized API responses
@@ -46,70 +46,62 @@ class Respond implements ResponseBuilderInterface, ResponseFormatterInterface
     /**
      * Create a new Respond instance with status code
      *
-     * @param int $status HTTP status code (required)
-     * @return self
+     * @param  int  $status  HTTP status code (required)
      */
     public static function status(int $status): self
     {
-        $instance = new self();
+        $instance = new self;
         $instance->status = $status;
+
         return $instance;
     }
 
     /**
      * Set custom message
-     *
-     * @param string $message
-     * @return self
      */
     public function message(string $message): self
     {
         $this->customMessage = $message;
+
         return $this;
     }
 
     /**
      * Set custom details
-     *
-     * @param string $details
-     * @return self
      */
     public function details(string $details): self
     {
         $this->customDetails = $details;
+
         return $this;
     }
 
     /**
      * Set response data
-     *
-     * @param mixed $data
-     * @return self
      */
     public function data(mixed $data): self
     {
         $this->data = $data;
+
         return $this;
     }
 
     /**
      * Set language for translations
      *
-     * @param string $language Language code (en, ar, de, fr, es, it)
-     * @return self
+     * @param  string  $language  Language code (en, ar, de, fr, es, it)
      */
     public function language(string $language): self
     {
         if (Language::isSupported($language)) {
             $this->languageEnum = Language::fromCode($language);
         }
+
         return $this;
     }
 
     /**
      * Get the current language, with fallback logic
-     *
-     * @return string
      */
     protected function getLanguage(): string
     {
@@ -118,26 +110,32 @@ class Respond implements ResponseBuilderInterface, ResponseFormatterInterface
             return $this->languageEnum->value;
         }
 
-        // Second priority: config default language
-        $configLanguage = Config::get('responsify.language');
-        if ($configLanguage && Language::isSupported($configLanguage)) {
-            return $configLanguage;
-        }
-
-        // Third priority: app locale
+        // Second priority: app locale
         $appLocale = Config::get('app.locale');
         if ($appLocale && Language::isSupported($appLocale)) {
             return $appLocale;
+        }
+
+        // Third priority: config default language
+        $configLanguage = Config::get('responsify.language');
+        if ($configLanguage && Language::isSupported($configLanguage)) {
+            return $configLanguage;
         }
 
         // Fallback to English
         return Language::ENGLISH->value;
     }
 
+    protected function translate(string $key, string $fallback): string
+    {
+        $language = $this->getLanguage();
+        $translation = __($key, [], $language);
+
+        return $translation === $key ? $fallback : $translation;
+    }
+
     /**
      * Get translated message for the current status
-     *
-     * @return string
      */
     protected function getMessage(): string
     {
@@ -145,37 +143,14 @@ class Respond implements ResponseBuilderInterface, ResponseFormatterInterface
             return $this->customMessage;
         }
 
-        $language = $this->getLanguage();
-
-        // Try to load translation from the language file
-        $translationPath = __DIR__ . "/lang/{$language}/messages.php";
-
-        if (file_exists($translationPath)) {
-            $translations = include $translationPath;
-            if (isset($translations[$this->status]['message'])) {
-                return $translations[$this->status]['message'];
-            }
-        }
-
-        // Fallback to English if current language file doesn't have the status
-        if ($language !== 'en') {
-            $englishPath = __DIR__ . "/lang/en/messages.php";
-            if (file_exists($englishPath)) {
-                $translations = include $englishPath;
-                if (isset($translations[$this->status]['message'])) {
-                    return $translations[$this->status]['message'];
-                }
-            }
-        }
-
-        // Ultimate fallback for unknown status codes
-        return 'Unknown Status';
+        return $this->translate(
+            "responsify::messages.{$this->status}.message",
+            'Unknown Status'
+        );
     }
 
     /**
      * Get translated details for the current status
-     *
-     * @return string
      */
     protected function getDetails(): string
     {
@@ -183,37 +158,14 @@ class Respond implements ResponseBuilderInterface, ResponseFormatterInterface
             return $this->customDetails;
         }
 
-        $language = $this->getLanguage();
-
-        // Try to load translation from the language file
-        $translationPath = __DIR__ . "/lang/{$language}/messages.php";
-
-        if (file_exists($translationPath)) {
-            $translations = include $translationPath;
-            if (isset($translations[$this->status]['details'])) {
-                return $translations[$this->status]['details'];
-            }
-        }
-
-        // Fallback to English if current language file doesn't have the status
-        if ($language !== 'en') {
-            $englishPath = __DIR__ . "/lang/en/messages.php";
-            if (file_exists($englishPath)) {
-                $translations = include $englishPath;
-                if (isset($translations[$this->status]['details'])) {
-                    return $translations[$this->status]['details'];
-                }
-            }
-        }
-
-        // Ultimate fallback for unknown status codes
-        return 'No additional details available';
+        return $this->translate(
+            "responsify::messages.{$this->status}.details",
+            'No additional details available'
+        );
     }
 
     /**
      * Get the response data
-     *
-     * @return mixed
      */
     protected function getData(): mixed
     {
@@ -222,8 +174,6 @@ class Respond implements ResponseBuilderInterface, ResponseFormatterInterface
 
     /**
      * Build the response array
-     *
-     * @return array
      */
     protected function buildResponse(): array
     {
@@ -237,8 +187,6 @@ class Respond implements ResponseBuilderInterface, ResponseFormatterInterface
 
     /**
      * Convert response to array (internal/testing use)
-     *
-     * @return array
      */
     public function toArray(): array
     {
@@ -247,8 +195,6 @@ class Respond implements ResponseBuilderInterface, ResponseFormatterInterface
 
     /**
      * Convert response to JSON string (logging/external systems)
-     *
-     * @return string
      */
     public function toJsonString(): string
     {
@@ -257,8 +203,6 @@ class Respond implements ResponseBuilderInterface, ResponseFormatterInterface
 
     /**
      * Convert response to Laravel Collection (fluent handling)
-     *
-     * @return Collection
      */
     public function toCollection(): Collection
     {
@@ -268,8 +212,7 @@ class Respond implements ResponseBuilderInterface, ResponseFormatterInterface
     /**
      * Convert response to JsonResponse (API/Controller use)
      *
-     * @param int $options JSON encoding options
-     * @return JsonResponse
+     * @param  int  $options  JSON encoding options
      */
     public function toJson(int $options = 0): JsonResponse
     {
@@ -278,8 +221,6 @@ class Respond implements ResponseBuilderInterface, ResponseFormatterInterface
 
     /**
      * Convert response to Response (Web routes)
-     *
-     * @return Response
      */
     public function toResponse(): Response
     {
@@ -292,8 +233,6 @@ class Respond implements ResponseBuilderInterface, ResponseFormatterInterface
 
     /**
      * Send response directly (direct output)
-     *
-     * @return void
      */
     public function send(): void
     {
@@ -302,8 +241,6 @@ class Respond implements ResponseBuilderInterface, ResponseFormatterInterface
 
     /**
      * Convert to string (debug/echo)
-     *
-     * @return string
      */
     public function __toString(): string
     {
