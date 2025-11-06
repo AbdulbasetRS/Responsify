@@ -121,8 +121,8 @@ return Respond::status(200)
 The package automatically handles language fallbacks:
 
 1. **Manual language** (if set via `language()` method)
-2. **Config default** (`config('responsify.language')`)
-3. **App locale** (`config('app.locale')`)
+2. **App locale** (`config('app.locale')`)
+3. **Config default** (`config('responsify.language')`)
 4. **English** (ultimate fallback)
 
 ### Output Formats
